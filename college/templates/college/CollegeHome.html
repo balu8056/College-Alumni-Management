@@ -1,0 +1,404 @@
+{% extends 'index.html' %}
+
+{% block title %} College Home | Alumni Tracking System {% endblock title %}
+
+{% block css %}
+<style>
+
+    .upload-xl{
+        width: 80%;
+        height: 170px;
+        margin: 10% auto;
+        border: 1px solid gray;
+        border-radius: 25px;
+        margin-right: 10px;
+    }
+    .upload-xl-top{
+        padding: 10px;
+        border-bottom: 1px solid gray;
+    }
+    .form-upload-xl{
+        padding: 20px;
+    }
+    .upload-one{
+        margin-left:10px;
+        width: 80%;
+        margin: 0 auto;
+        border: 1px solid gray;
+        border-radius: 25px;
+        padding-bottom:20px;
+    }
+    .form-upload-one{
+        padding: 20px;
+    }
+    .tableFixHead{
+        overflow-y: auto;
+        height: 500px;
+    }
+    .tableFixHead thead th {
+        position: sticky;
+        top: 0px;
+    }
+
+    @media only screen and (max-width:600px){
+        .upload-xl{
+            margin: 0 auto;
+            margin-left: 10px;
+            margin-right: 10px;
+            width: 100%;
+        }
+        .upload-one{
+            width: 100%;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+        .form-upload-one{
+            padding:0px;
+        }
+    }
+</style>
+{% endblock css %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
+		<a class="navbar-brand" href="{% url 'app1:HomePage' %}"><i class="fas fa-home"></i></a>
+		<ul class="navbar-nav text-white">
+			<li class="nav-item">
+				Alumni Tracking - College
+			</li>
+		</ul>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+			<ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="btn btn-danger nav-link" style="border-radius: 20px;" href="{% url 'app1:StudentLogout' %}">sign out</a></li>
+			</ul>
+        </div>
+    </nav>
+
+	<div class="text-center" style="position:relative;padding-top:70px;">
+        {% for mes in messages %}
+            <div class="alert alert-mes alert-warning alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">x</button>
+				{{mes}}
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="upload-xl col-sm-4">
+                <div class="upload-xl-top">
+                    Upload via excel...
+                </div>
+                <div class="form-upload-xl">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <input type="file" id="xl" style="box-shadow:0px 0px 0px 0px white;" name="excel" class="form-control" required accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                        </div>
+                        <button class="btn btn-sm btn-primary" style="float: right;" value="submit">upload</button>
+                    </form>
+                </div>
+
+            </div>
+            <br>
+            <div class="upload-one col-sm">
+                <div class="upload-xl-top">
+                    Upload Alumni One by One...
+                </div>
+                <div class="form-upload-one">
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label for="name">Name - </label>
+                                <input type="text" oninput="check();" style="box-shadow:0px 0px 0px 0px white;" id="name" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="regno">Reg no - </label>
+                                <input type="text" oninput="check();" style="box-shadow:0px 0px 0px 0px white;" id="regno" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email - </label>
+                                <input type="email" oninput="check();" style="box-shadow:0px 0px 0px 0px white;" id="email" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="date">DOB - </label>
+                                <input type="date" oninput="check();" style="box-shadow:0px 0px 0px 0px white;" id="date" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label for="college">College - </label>
+                                <select style="box-shadow:0px 0px 0px 0px white;" class="form-control ins" oninput="check();" id="college" name="regcol" required>
+                                    <option hidden selected>College</option>
+                                    {% for i in colleges %}
+                                    <option>
+                                        {{i.college_name}}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="dept">Department - </label>
+                                <select style="box-shadow:0px 0px 0px 0px white;" class="form-control ins" oninput="check();" id="dept" name="regdept" required>
+                                    <option selected hidden>DEPT</option>
+                                    <option>Civil Engineering</option>
+                                    <option>Mechanical Engineering</option>
+                                    <option>Electronics and Communication Engineering</option>
+                                    <option>Electrical and Electronics Engineering</option>
+                                    <option>Computer Science and Engineering</option>
+                                    <option>Metallurgical Engineering</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="batch-end">Batch - </label>
+                                <select style="box-shadow:0px 0px 0px 0px white;" id="batch-end" class="form-control ins" oninput="check();" name="regyoc">
+                                    <option selected hidden>Batch year</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone no - </label>
+                                <input type="text" style="box-shadow:0px 0px 0px 0px white;" oninput="check();" id="phone" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="button" style="float:right;" id="clkUpload" class="btn btn-sm btn-primary" value="upload">
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+   <div class="tableFixHead table-responsive">
+       <table class="table table-hover table-fixed">
+           <thead class="thead-dark">
+               <tr>
+                   <th>SNo</th>
+                   <th>Name</th>
+                   <th>Reg no</th>
+                   <th>Email</th>
+                   <th>Mobile</th>
+                   <th></th>
+               </tr>
+           </thead>
+           <tbody>
+           {% for index, data in Alumni %}
+               <tr>
+                   <td>{{index}}</td>
+                   <td>{{data.Name}}</td>
+                   <td>{{data.Regno}}</td>
+                   <td>{% if data.Email %} {{data.Email}} {% else %} {{"None"}} {% endif %}</td>
+                   <td hidden>{{data.DOB}}</td>
+                   <td hidden>{{data.College}}</td>
+                   <td hidden>{{data.Dept}}</td>
+                   <td hidden>{{data.Batch}}</td>
+                   <td>{% if data.PhoneNo %} {{data.PhoneNo}} {% else %} {{"None"}} {% endif %}</td>
+                   <td hidden>{{data.pk}}</td>
+                   <td><button class="btn btn-primary edit-alumni" data-toggle="modal" data-target="#Alumni">edit</button></td>
+               </tr>
+           {% endfor %}
+           </tbody>
+       </table>
+   </div>
+<br>
+<br>
+    <div class="modal fade" id="Alumni">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" >Edit  <input type="text" value="" id="m-primary_key" style="display: none;"></h4>
+                    <button type="button" class="close" id="close1" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label for="m-name" class="labels">Name</label>
+                                <input type="text" style="box-shadow:0px 0px 0px 0px white;" class="form-control ins" id="m-name" placeholder="Your name..." name="regname" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="m-regno" class="labels">Reg no</label>
+                                <input type="text" style="box-shadow:0px 0px 0px 0px white;" class="form-control ins" id="m-regno" placeholder="Registration no." name="regregno" required autocomplete="off">
+                            </div>
+                            <div class="form-group">
+                                <label for="m-email" class="labels">E-mail</label>
+                                <input type="email" style="box-shadow:0px 0px 0px 0px white;" class="form-control ins" id="m-email" placeholder="example@email.com" name="regemail" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="m-date" class="labels">DOB</label>
+                                <input type="date" style="box-shadow:0px 0px 0px 0px white;" class="form-control ins" id="m-date" name="regdob" required>
+                            </div>
+                        </div>
+                        <div class="col-sm">
+                            <div class="form-group">
+                                <label for="m-college" class="labels">College</label>
+                                <select style="box-shadow:0px 0px 0px 0px white;" class="form-control ins" id="m-college" name="regcol" required>
+                                    <option hidden selected>College</option>
+                                    {% for i in colleges %}
+                                    <option>
+                                        {{i.college_name}}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="m-dept" class="labels">Department</label>
+                                <select style="box-shadow:0px 0px 0px 0px white;" class="form-control ins" id="m-dept" name="regdept" required>
+                                    <option selected hidden>DEPT</option>
+                                    <option>Civil Engineering</option>
+                                    <option>Mechanical Engineering</option>
+                                    <option>Electronics and Communication Engineering</option>
+                                    <option>Electrical and Electronics Engineering</option>
+                                    <option>Computer Science and Engineering</option>
+                                    <option>Metallurgical Engineering</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="m-batch-end" class="labels">Batch</label>
+                                <select style="box-shadow:0px 0px 0px 0px white;" id="m-batch-end" class="form-control ins" name="regyoc">
+                                    <option selected hidden>Batch year</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="m-phone">Phone no - </label>
+                                <input type="text" style="box-shadow:0px 0px 0px 0px white;" id="m-phone" class="form-control" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="reg-but">
+                        <button type="submit" style="float: left;" class="btn btn-danger" id="delete">Delete</button>
+                        <button type="submit" style="float: right;" class="btn btn-primary" id="save">Save</button>
+                    </div>
+                </div>
+            </div>
+		</div>
+	</div>
+{% else %}
+        <h2>hello</h2>
+		<p>please <a href="{% url 'app1:UserLogin' %}">login</a></p>
+{% endif %}
+
+{% block script %}
+<script>
+    function check(){
+        if ($("#name").val().length > 0 && $("#regno").val().length > 0 && $("#email").val().length > 0 && $("#date").val().length > 0 && $("#college").val() !== "College" && $("#dept").val() !== "DEPT" && $("#batch-end") !=="Batch year" && $("#phone").val().length > 0){
+            $("#clkUpload").attr("disabled", false);
+            $('#clkUpload').val("upload");
+            return true;
+        }else{
+            $('#clkUpload').val("not filled");
+            $("#clkUpload").attr("disabled", true);
+        }
+    }
+    $(document).ready(function(){
+        const listOfInputs = ["name", "regno", "email", "date", "college", "dept", "batch-end", "phone", "primary_key"];
+
+        $(document).on("keyup", (key) => {
+        	if (key.which == 27){
+				$("#close").click().click();
+				$("#close1").click().click();
+			}
+		});
+
+        $(".edit-alumni").click(function(){
+            listOfInputs.forEach( (cur, pos) =>{
+                if ((pos + 1) == 4 ){
+                    let date = new Date($(this).parent().siblings().eq(pos + 1).text());
+                    let correct_date = (date.getDate()) > 10 ? (date.getDate()) : "0"+(date.getDate());
+                    let correct_month = (date.getMonth()+1) > 10 ? (date.getMonth()+1) : "0"+(date.getMonth()+1);
+
+                    $(`#m-${cur}`).val(`${date.getFullYear()}-${correct_month}-${correct_date}`);
+                }else{
+                     $(`#m-${cur}`).val($(this).parent().siblings().eq(pos + 1).text());
+                     console.log($(this).parent().siblings().eq(pos + 1).text());
+                }
+            });
+        });
+
+        $("#delete").click(function(){
+            console.log($(`#m-${listOfInputs[8]}`).val());
+            $.ajax({
+                type: "POST",
+                url: "{% url 'college:DeleteAlumni' %}",
+                data: {primary_key: $(`#m-${listOfInputs[8]}`).val(), csrfmiddlewaretoken: "{{csrf_token}}"},
+                success: (result) => {
+                    alert(result);
+                    window.location.reload();
+                },
+                error: (result) => {
+                    console.log(`error in deletion ${result}`);
+                }
+            });
+        });
+        $("#save").click(function(){
+            let needEdit = {}
+
+            listOfInputs.forEach( (cur, pos) => {
+                needEdit[cur] = $(`#m-${cur}`).val();
+            });
+            console.log(needEdit);
+            $.ajax({
+                url: "{% url 'college:EditAlumni' %}",
+                type: "POST",
+                data: {edit: JSON.stringify(needEdit), csrfmiddlewaretoken: "{{csrf_token}}"},
+                success: (result) => {
+                    console.log(result);
+                    alert('uploaded successfully!!!')
+                    window.location.reload();
+                },
+                error: (result) => {
+                    console.log(result);
+                }
+            });
+        });
+        (function(){
+                let current_year = new Date().getFullYear() - 3;
+                for(let i=1970;i<current_year;i++){
+                    $("#batch-end").append("<option>"+i+"-"+(i+4)+"</option>");
+                    $("#m-batch-end").append("<option>"+i+"-"+(i+4)+"</option>");
+                }
+        })();
+
+        (function(){
+            let current_year = new Date().getFullYear() - 3;
+            for(let i=1970;i<current_year;i++){
+                $("#batch").append("<option>"+i+"-"+(i+4)+"</option>")
+            }
+        })();
+        $("#clkUpload").on("click", function(){
+            let addAlumni = {}
+            listOfInputs.forEach( (cur, pos)=>{
+                if (pos !== 8){
+                    addAlumni[cur] = $(`#${cur}`).val();
+                }
+            });
+            if (check()){
+                $.ajax({
+                    type: "POST",
+                    url: "{% url 'college:AddAlumni' %}",
+                    data: {alumni: JSON.stringify(addAlumni), csrfmiddlewaretoken: "{{csrf_token}}"},
+                    success: (data) => {
+                        alert('suucessfully uploaded');
+                        listOfInputs.forEach( (cur, pos) => {
+                            if (pos !== 8){
+                                $(`#${cur}`).val('');
+                            }
+                        });
+                        console.log("success: "+ data);
+                        window.location.reload();
+                    },
+                    error: (data) => {console.log("error: "+ data)}
+                });
+            }else{
+                $(this).val("not filled");
+                console.log("not filled");
+            }
+        });
+    });
+</script>
+{% endblock script %}
+{% endblock content %}

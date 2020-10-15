@@ -1,0 +1,453 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block title %}Alumni Tracking System | GCE Salem {% endblock %}
+
+{% block css %}
+    <style>
+        body{
+            overflow-x: hidden;
+        }
+        .navbar{
+        	min-height: 50px;
+        }
+        li{
+        	font-size: 20px;
+			text-overflow: ellipsis;
+        }
+        .gce{
+            border: 1px solid gray;
+            width:100%;
+        }
+        .gce-about{
+            padding: 20px;
+        }
+        .gce-top{
+            padding-left: 15px;
+            background-color: gray;
+            width: 100%;
+            height: 50px;
+        }
+        .gce, .gce-top{
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+        }
+        .card{
+            border-color: grey;
+        }
+        .card-img-top {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto;
+            margin-top: 10px;
+        }
+        .card-body{
+            margin: 0 auto;
+            margin-bottom: 10px;
+        }
+        #demo1{
+            display: none;
+        }
+		.modal-dialog {
+          	min-width: 600px;
+        }
+        @media screen and (max-width: 600px){
+            .carousel .carousel-inner img{
+                width: 400px;
+                height: 250px;
+            }
+            #demo1{
+                display: block;
+            }
+            .table{
+                display: none;
+            }
+            .carousel .carousel-inner .developer img {
+                margin: 0 auto;
+                margin-top: 10px;
+                width: 200px;
+                height: 200px;
+            }
+            .modal-dialog {
+         	 	min-width: 0px;
+        	}
+        }
+    </style>
+{% endblock css %}
+
+{% block content %}
+
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
+		<ul class="navbar-nav text-white">
+			<li class="nav-item">
+				Alumni Tracking System
+			</li>
+		</ul>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item btn"><a class="nav-link" href="#aboutus">About us</a></li>
+				<li class="nav-item btn"><a class="nav-link " href="#contact-us">Contact us</a></li>
+                {% if user.is_authenticated %}
+				{% if user.is_superuser %}
+					<li class="nav-item btn"><a class="nav-link" href="{% url 'admin:index' %}">Admin</a></li>
+				{% elif user.username == directorateOfGce.username %}
+					<li class="nav-item btn"><a class="nav-link" href="{% url 'direc:directorateDashboard' %}">Directorate</a></li>
+				{% elif user.username == gceSalem.username %}
+					<li class="nav-item btn"><a class="nav-link" href="{% url 'college:CollegeHome' %}">College</a></li>
+				{% else  %}
+					<li class="nav-item btn"><a class="nav-link" href="{% url 'alumni:AlumniHome' %}">{{user.first_name}}</a></li>
+				{% endif %}
+					<li class="nav-item"><a class="btn btn-danger nav-link" style="border-radius: 20px;margin-top: 5px;" href="{% url 'app1:StudentLogout' %}">sign out</a></li>
+				{% else %}
+					<li class="nav-item btn"><a class="nav-link" data-toggle="modal" data-target="#Login" data-backdrop="static" >Login</a></li>
+					<li class="nav-item btn"><a class="nav-link " data-toggle="modal" data-target="#Register" data-backdrop="static" >Register</a></li>
+				{% endif %}
+			</ul>
+        </div>
+    </nav>
+	<div class="text-center" style="position:relative;padding-top:70px;">
+        {% for mes in messages %}
+            <div class="alert alert-warning alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert">x</button>
+				{{mes}}
+            </div>
+        {% endfor %}
+    </div>
+    <br>
+    <div class="container">
+        <div id="demo" class="carousel slide" data-ride="carousel">
+            <!-- Indicators -->
+            <ul class="carousel-indicators">
+                <li data-target="#demo" data-slide-to="0" class="active"></li>
+                <li data-target="#demo" data-slide-to="1"></li>
+			</ul>
+            <!-- The slideshow -->
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="{% static 'images/gceEntrance.jpg' %}" alt="Los Angeles" width="1100" height="500">
+                </div>
+                <div class="carousel-item">
+                    <img src="{% static 'images/gceAdmin.jpg' %}" alt="Chicago" width="1100" height="500">
+                </div>
+            </div>
+            <!-- Left and right controls -->
+            <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </a>
+            <a class="carousel-control-next" href="#demo" data-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </a>
+        </div>
+        <br>
+        
+        <div class="gce">
+            <div class="gce-top">
+                <h3 style="padding: 10px;">Welcome to gce, Salem</h3>
+            </div>
+            <section class="gce-about">
+                Government College of Engineering, Salem-11, was started during the Third Five year plan in the year 1966 and is located on a 162 hectares site surrounded by hills. GCE, Salem was then the Third Engineering Institution in Tamil Nadu. The first batch of students was selected for the academic year 1966-1967. The institution offers  6 UG and 5 PG programmes. GCE, Salem is a recognized center for research under  Anna University for Ph.D., and M.S., programs. All the departments have well qualified faculty members and excellent infrastructural facilities. GCE, Salem  is supported by  World Bank Financial Assistance , TEQIP phase II to the tune of 17.5 crores. GCE, Salem  has excellent computer facilities with  Internet Connectivity  in all the  departments. GCE, Salem is one of the participating institution in Quality Enhancement in Engineering Education (QEEE) programme offered by Department of Higher Education ,MHRD,Goverment of India. GCE, Salem hostels are provided with the Wi-Fi access.GCE,Salem  has strong tie-ups with  R&D labs & Industries. The industrial experts frequently interact with the instituion for making the students  industry-ready. GCE, Salem is thus growing from strength to strength and gaining recognition for its contribution to the cause of Engineering Education.
+            </section>
+        </div>
+		<br>
+		<div class="gce" id="aboutus">
+            <div class="gce-top">
+                <h3 style="padding: 10px;">About us</h3>
+            </div>
+            <section class="gce-about">The institute was affiliated to the University of Madras until 2001. After a brief affiliation with Periyar University, it was a constituent college of Anna University which is a statewide centralized engineering university. From the year of 2009, GCE salem has been promoted as one of the Autonomous Engineering Colleges in Tamil Nadu.
+				The college is a Regional Centre for Anna University for Ph.D. and M.S., programmes. It is the zonal office for the conduct of Anna University Examinations in the 21 colleges belonging to this zone. The institution is one of the eleven technical institutions of Tamil Nadu selected for World Bank financial assistance under Technical Education Quality Improvement Programme (TEQIP).[4] The institution has received an approval for a sum of Rs. 10.967 crores as lifetime allocation for the project implementation spread over a period of four years from 2003 to 2007.
+			</section>
+        </div>
+    </div>
+
+	<br>
+
+	<h3 id="summa">Developers:</h3>
+    <div id="contact-us"></div>
+    <table class="table">
+        <tr>
+            <td>
+                <div class="card developer">
+                    <img class="card-img-top" src="{% static 'images/gceCSE.jpg' %}" alt="Card image" >
+                    <div class="card-body">
+                        <h4 class="card-title">John Doe</h4>
+                        <p class="card-text">Backend developer</p>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="card developer">
+                    <img class="card-img-top" src="{% static 'images/gceCSE.jpg' %}" alt="Card image">
+                    <div class="card-body">
+                        <h4 class="card-title">John Doe</h4>
+                        <p class="card-text">Backend developer</p>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="card developer">
+                    <img class="card-img-top" src="{% static 'images/gceCSE.jpg' %}" alt="Card image" >
+                    <div class="card-body">
+                        <h4 class="card-title">John Doe</h4>
+                        <p class="card-text">Backend developer</p>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="card developer">
+                    <img class="card-img-top" src="{% static 'images/gceCSE.jpg' %}" alt="Card image">
+                    <div class="card-body">
+                        <h4 class="card-title">John Doe</h4>
+                        <p class="card-text">Backend developer</p>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="card developer">
+                    <img class="card-img-top" src="{% static 'images/gceCSE.jpg' %}" alt="Card image">
+                    <div class="card-body">
+                        <h4 class="card-title">John Doe</h4>
+                        <p class="card-text">Backend developer</p>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div id="demo1" class="carousel slide" data-ride="carousel">
+        <!-- The slideshow -->
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="card developer">
+                    <img class="card-img-top" src="{% static 'images/gceCSE.jpg' %}" alt="Card image" >
+                    <div class="card-body">
+                        <h4 class="card-title">John Doe</h4>
+                        <p class="card-text">Backend developer</p>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="card developer">
+                    <img class="card-img-top" src="{% static 'images/gceCSE.jpg' %}" alt="Card image" >
+                    <div class="card-body">
+                        <h4 class="card-title">John Doe</h4>
+                        <p class="card-text">Backend developer</p>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="card developer">
+                    <img class="card-img-top" src="{% static 'images/gceCSE.jpg' %}" alt="Card image" >
+                    <div class="card-body">
+                        <h4 class="card-title">John Doe</h4>
+                        <p class="card-text">Backend developer</p>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="card developer">
+                    <img class="card-img-top" src="{% static 'images/gceCSE.jpg' %}" alt="Card image" >
+                    <div class="card-body">
+                        <h4 class="card-title">John Doe</h4>
+                        <p class="card-text">Backend developer</p>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="card developer">
+                    <img class="card-img-top" src="{% static 'images/gceCSE.jpg' %}" alt="Card image" >
+                    <div class="card-body">
+                        <h4 class="card-title">John Doe</h4>
+                        <p class="card-text">Backend developer</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- Left and right controls -->
+        <a class="carousel-control-prev" href="#demo1" data-slide="prev">
+            <span class="" style="color: black;font-size:30px;"><</span>
+        </a>
+        <a class="carousel-control-next" href="#demo1" data-slide="next">
+            <span class="" style="color: black;font-size:30px;">></span>
+        </a>
+    </div>
+    <br>
+
+	<div class="modal fade" id="Login">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" >Login</h4>
+                    <button type="button" class="close" id="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'app1:UserLogin' %}" method="POST" enctype="multipart/form-data">
+						{% csrf_token %}
+                        <div class="form-group">
+                            <label for="name">Name:</label>
+                            <input type="text" style="box-shadow:0px 0px 0px 0px white;" class="form-control ins" name="username" id="name" autocomplete="off" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password:</label>
+                            <input type="password" style="box-shadow:0px 0px 0px 0px white;" class="form-control ins" name="userpassword" id="password" autocomplete="off" required>
+							<span style="cursor: pointer; float: right;  margin-left: -25px; margin-top: -25px; z-index:2;" class="fa fa-eye fa-eye-slash field-icon toggle-password"></span>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary" style="float: right;">Sign in</button>
+							<a href="{% url 'app1:UserForgetPassword' %}" style="box-shadow:0px 0px 0px 0px white;" class="btn btn-default ins" id="forget"> Forget password</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+  	</div>
+
+    <div class="modal fade" id="Register">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title" >Register</h4>
+                    <button type="button" class="close" id="close1" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'app1:StudentRegister' %}" id="register-form-modal" method="post" enctype="multipart/form-data">
+						{% csrf_token %}
+                        <div class="row">
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    <label for="regname" class="labels">Name</label>
+									<input type="text" style="box-shadow:0px 0px 0px 0px white;" class="form-control ins" id="regname" placeholder="Your name..." name="regname" required autocomplete="off">
+								</div>
+								<div class="form-group">
+									<label for="regno" class="labels">Reg no</label>
+									<input type="text" style="box-shadow:0px 0px 0px 0px white;" class="form-control ins" id="regno" placeholder="Registration no." name="regregno" required autocomplete="off">
+								</div>
+								<div class="form-group">
+									<label for="email" class="labels">E-mail</label>
+									<input type="email" style="box-shadow:0px 0px 0px 0px white;" class="form-control ins" id="email" placeholder="example@email.com" name="regemail" required>
+								</div>
+								<div class="form-group">
+									<label for="date" class="labels">DOB</label>
+									<input type="date" style="box-shadow:0px 0px 0px 0px white;" class="form-control ins" id="date" name="regdob" required>
+								</div>
+                            </div>
+                            <div class="col-sm">
+                                <div class="form-group">
+                                    <label for="college" class="labels">College</label>
+									<select style="box-shadow:0px 0px 0px 0px white;" class="form-control ins" id="college" name="regcol" required>
+										<option hidden selected>College</option>
+										{% for i in colleges %}
+										<option>
+											{{i.college_name}}
+										</option>
+										{% endfor %}
+									</select>
+								</div>
+								<div class="form-group">
+									<label for="dept" class="labels">Department</label>
+									<select style="box-shadow:0px 0px 0px 0px white;" class="form-control ins" id="dept" name="regdept" required>
+                                        <option selected hidden>DEPT (only after selecting college)</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<label for="batch-end" class="labels">Batch</label>
+                                    <select style="box-shadow:0px 0px 0px 0px white;" id="batch-end" class="form-control ins" name="regyoc">
+                                        <option selected hidden>Batch year</option>
+                                    </select>
+								</div>
+                                <div class="form-group">
+                                    <label for="phone" class="labels">Phone No.</label>
+                                    <input type="number" id="phone" class="form-control ins" name="regphone" oninput="javascript: if (this.value.length > 10){ this.value = this.value.slice(0,10);}" style="box-shadow: 0px 0px 0px 0px white;">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm text-center">
+                            <div class="form-group">
+                                <img class="open-open" src="{% static 'images/Anonymous.png' %}" id="profile-container" style="cursor:pointer;margin-left:10px;margin-top:5px;width:100px;height:100px;border-radius:50%;">
+                                <input type="file" style="display:none;" id="profile-pic" name="regpro" accept="image/*" required>
+                                <i style="position:absolute;font-size:24px;cursor:pointer;margin-top:70px;margin-left:-10px;" class="open-open fa">&#xf030;</i>
+                            </div>
+                        </div>
+                        <div class="reg-but">
+                            <button type="submit" style="float: right;" class="btn btn-primary" id="button"> Sign up</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+		</div>
+	</div>
+{% block script %}
+	<script>
+		$(document).ready(function(){
+			$(document).on("keyup", (key) => {
+				if (key.which == 27){
+					$("#close").click().click();
+					$("#close1").click().click();
+				}
+			});
+
+			$("#college").on("change", function(){
+			    $("#dept").children().remove();
+			    $.ajax({
+			        type: "POST",
+			        url: "{% url 'app1:OnCollegeChange' %}",
+			        data: {college: $(this).val(),  csrfmiddlewaretoken: "{{csrf_token}}"},
+			        success: (data)=>{
+			            let depts = data.split(',');
+			            depts.forEach( (cur) => {
+			                $("#dept").append(`<option>${cur}</option>`)
+			            });
+			        },
+			        error: (data)=>{
+			            console.log(data);
+			        },
+
+			    });
+			});
+			var readURL = function(input) {
+				 if (input.files && input.files[0]) {
+					 var reader = new FileReader();
+					 reader.onload = function (e) {
+						$('#profile-container').attr('src', e.target.result);
+					 }
+					 reader.readAsDataURL(input.files[0]);
+				 }
+			}
+			$("#profile-pic").on('change', function(){
+				readURL(this);
+			});
+			$(".open-open").on("click", function(){
+				$("#profile-pic").click();
+			});
+			(function(){
+                let current_year = new Date().getFullYear() - 3;
+                for(let i=1970;i<current_year;i++){
+                    $("#batch-end").append("<option>"+i+"-"+(i+4)+"</option>")
+                }
+            })();
+
+            $(".ins").on({
+                focus: function(){
+                    $(this).css("border", "2px solid black");
+                },
+                blur: function(){
+                    $(this).css("border", "1px solid grey");
+                }
+            });
+			$(".toggle-password").click(function() {
+				$(this).toggleClass("fa-eye-slash");
+				var input = $("#password");
+				if (input.attr("type") == "password") {
+					input.attr("type", "text");
+				} else {
+					input.attr("type", "password");
+				}
+				$("#password").focus();
+			});
+		});
+    </script>
+	{% endblock %}
+{% endblock content %}

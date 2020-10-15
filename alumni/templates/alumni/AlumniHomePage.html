@@ -1,0 +1,204 @@
+{% extends 'index.html' %}
+{% load static %}
+{% block title %}Alumni Page | Alumni Tracking System{% endblock title %}
+
+{% block css %}
+    <style>
+        .container{
+            padding: 10px;
+        }
+        .main-content{
+            position: relative;
+            top: 20px;
+            border: 1px solid gray;
+            height: 85vh;
+            border-radius: 25px;
+        }
+        .round{
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+        .col1-top{
+            border-top-left-radius: 25px;
+            border-top-right-radius: 25px;
+            padding-left: 10px;
+            height: 40px;
+            border-bottom: 1px solid gray;
+        }
+        .chatscreen{
+            height: 85%;
+            padding: 10px;
+            overflow-y: auto;
+        }
+        .col1-bottom{
+            position: absolute;
+            bottom: 0px;
+            width: 100%;
+            border-top: 1px solid gray;
+            height: 40px;
+        }
+        #textmsg{
+            border-bottom-left-radius: 25px;
+        }
+        #sendmsg{
+            border-bottom-right-radius: 25px;
+        }
+        .msg_container, .msg_container_send{
+            padding: 5px;
+        }
+        .msg_container{
+            border: 1px solid blue;
+            position: relative;
+            margin-left: 10px;
+            border-radius: 25px;
+            border-top-left-radius: 0px;
+            background-color: #82ccdd;
+            min-width: 100px;
+        }
+        .msg_container_send{
+            border: 1px solid green;
+            margin-right: 10px;
+            border-radius: 25px;
+            border-top-right-radius: 0px;
+            background-color: #78e08f;
+        }
+        @media only screen and (max-width: 600px){
+            .main-content{
+                overflow: hidden;
+                margin-top:5px;
+                height: 75vh;
+            }
+        }
+    </style>
+{% endblock css %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
+		<a class="navbar-brand" href="{% url 'app1:HomePage' %}"><i class="fas fa-home"></i></a>
+		<ul class="navbar-nav text-white">
+			<li class="nav-item">Alumni Tracking System - Chat</li>
+		</ul>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+			<ul class="navbar-nav ml-auto">
+                <li class="nav-item"><a class="btn btn-danger nav-link" style="border-radius: 20px;" href="{% url 'app1:StudentLogout' %}">sign out</a></li>
+			</ul>
+        </div>
+    </nav>
+
+    <div class="container col-sm-6" style="position:relative;padding-top:50px;">
+        <div class="main-content">
+            <div class="col1-top">
+                <img  src="{% static 'images/gceCSE.jpg' %}" class="round">
+                <span class="online_icon"></span>
+                GCE, SALEM
+            </div>
+            <div class="chatscreen">
+                {% for i in messagesModel %}
+                {% if i.sentUserName != user.username %}
+                <div class="d-flex justify-content-start mb-4">
+                    <div class="img_cont_msg">
+                        <img src="media{{MEDIA_URL}}/{{i.userprofile}}" class="round">
+                    </div>
+                    <div class="msg_container">
+                        <div style="color:red;font-size:10px;position: absolute;top: 0px;width:90px;height: 15px;white-space:nowrap;overflow:hidden;text-overflow: ellipsis">
+                            sent by {{i.userSent}}
+                        </div>
+                        <div class="message" style="margin-top: 5px;">
+                            {{i.message}}
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="d-flex justify-content-end mb-4">
+                    <div class="msg_container_send">
+                        {{i.message}}
+                    </div>
+                    <div class="img_cont_msg_send">
+                        <img src="media{{ MEDIA_URL }}/{{i.userprofile }}" class="round">
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+            <div class="col1-bottom">
+                <form method="post" id="formdata">
+                    <div class="form-group mb-3 input-group">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{user.first_name}}" id="finduser">
+                        <input type="hidden" value="{{user.username}}" id="userfind">
+                        <textarea class="form-control" style="resize:none" rows="1" id="textmsg" autofocus placeholder="Type message..."></textarea>
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" id="sendmsg" type="submit"><span class="fas fa-location-arrow"></span></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <h2>hello</h2>
+    <p>please <a href="{% url 'app1:UserLogin' %}">login</a></p>
+{% endif %}
+
+{% block script %}
+<script>
+    $(document).ready(function(){
+        (function(){
+            $(".chatscreen").scrollTop($(".chatscreen").prop("scrollHeight"));
+            var loc = window.location;
+            var endpoint = '';
+            var wsStart = loc.protocol === "https:" ? "wss://" : "ws://";;
+            endpoint = wsStart + loc.host + loc.pathname;
+            var socket = new ReconnectingWebSocket(endpoint);
+            console.log(endpoint);
+            socket.onmessage = (e) => {
+                console.log("message", e);
+                receivedData = JSON.parse(e.data);
+                sentBy = receivedData['userSent'];
+                profile = receivedData['userprofile'];
+                if (receivedData.sentUserName !== $("#userfind").val()){
+                    const htmlmsg = `<div class="d-flex justify-content-start mb-4"><div class="img_cont_msg"><img src="media{{MEDIA_URL}}/${profile}" class="round"></div><div style="min-width:80px;" class="msg_container"><span style="color:red;margin-top:0px; font-size:10px;position:absolute;top:0px;">sent by ${sentBy}</span>${receivedData.message}</div></div>`;
+                    $(".chatscreen").append(htmlmsg);
+                    $(".chatscreen").scrollTop($(".chatscreen").prop("scrollHeight"));
+                }
+            }
+            socket.onopen = (e) => {
+                console.log("open", e);
+                $("#sendmsg").on("click", (event) => {
+                    event.preventDefault();
+                    const msg =  $("#textmsg").val().replace(/\n/g, '<br>');
+                    let msgSender = $("#finduser").val();
+                    let userprofile = "{{currentProfile}}";
+                    const finalData = {
+                        message: msg,
+                        user: msgSender,
+                        userprofile: userprofile,
+                    };
+                    if (msg.length > 0){
+                        const htmlmsg = `<div class="d-flex justify-content-end mb-4"><div class="msg_container_send">${msg}</div><div style="overflow:hidden;" class="img_cont_msg_send"><img src="media{{ MEDIA_URL }}/${userprofile}" class="round"></div></div>`;
+                        $(".chatscreen").append(htmlmsg);
+                        socket.send(JSON.stringify(finalData));
+                        $("#textmsg").val('');
+                        $(".chatscreen").scrollTop($(".chatscreen").prop("scrollHeight"));
+                        $("#textmsg").focus();
+                    }
+                });
+            }
+            socket.onerror = (e) => {
+                console.log("error", e);
+            }
+            socket.onclose = (e) => {
+                console.log("close", e);
+            }
+        })();
+    });
+</script>
+{% endblock %}
+{% endblock content %}

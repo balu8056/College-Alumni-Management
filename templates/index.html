@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}alumni{% endblock %}</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+
+    <!--Websocket Reconnect 1.0.0-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reconnecting-websocket/1.0.0/reconnecting-websocket.js"></script>
+
+    <!--Bootstrap 4.4.1-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <!--jquery 3.4.1-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!--popper 1.16.0-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <!--Bootstrap js 4.4.1-->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <!--Fontawesome 5.7.0 icons-->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css">
+
+
+    <!--rel icon-->
+    <link rel="icon" type="image/png" href="{% static 'images/favicon.png' %}">
+    {% block css %}
+
+    {% endblock %}
+</head>
+<body>
+{% block content %}
+
+{% endblock content %}
+
+</body>
+</html>

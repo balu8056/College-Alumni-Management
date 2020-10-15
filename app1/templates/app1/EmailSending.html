@@ -1,0 +1,11 @@
+{% extends 'index.html' %}
+
+{% block content %}
+    <h3>hello {{user}}</h3>
+    <h4>click the link to activate your account</h4>
+    {% if request.is_secure %}
+        <a href="{{'https://'}}{{link}}">Click here</a>
+    {% else %}
+        <a href="{{'http://'}}{{link}}">Click here</a>
+    {% endif %}
+{% endblock content %}

@@ -1,0 +1,258 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block title %}Directorate Managing College | Alumni Tracking System{% endblock title %}
+
+{% block css %}
+    <style>
+		.display-email{
+			display: block;
+		}
+		.display-button, .display-edit{
+			display: none;
+		}
+		.modal-title{
+			font-size: 2.5vh;
+		}
+		.tableFixHead{
+			overflow-y: auto;
+			height: 500px;
+		}
+		.tableFixHead thead th {
+			position: sticky;
+			top: 0px;
+		}
+		@media screen and (max-width: 600px){
+			.display-email{
+				display: none;
+			}
+			.display-button, .display-edit{
+				display: block;
+			}
+		}
+    </style>
+{% endblock css %}
+
+{% block content %}
+	 <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
+		<a class="navbar-brand" href="{% url 'app1:HomePage' %}"><i class="fas fa-home"></i></a>
+		<ul class="navbar-nav text-white">
+			<li class="nav-item">Alumni Tracking - Directorate
+			</li>
+		</ul>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item btn	">
+					<a class="nav-link text-white" href="{% url 'direc:directorateDashboard' %}">Manage Alumni</a>
+				</li>
+                <li class="nav-item">
+					<a class="btn btn-danger nav-link" style="border-radius: 20px;" href="{% url 'app1:StudentLogout' %}">sign out</a>
+				</li>
+			</ul>
+        </div>
+    </nav>
+
+	<div class="container" style="position:relative;padding-top:80px;">
+
+    	<div class="filter-query">
+	        <div class="form-group col-sm-7" style="margin:0 auto;">
+	            <input type="text" style="box-shadow: 0px 0px 0px 0px white;border: 2px solid black;" id="query" class="form-control" placeholder="Search College">
+	    	</div>
+		</div>
+
+		<div class="table_list tableFixHead table-responsive" style="margin-top: 20px;">
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th>SNo</th>
+						<th>Name</th>
+						<th>Code</th>
+						<th>Email</th>
+						<th>Contact</th>
+					</tr>
+				</thead>
+				<tbody>
+				{% for index, data in college %}
+				<tr>
+					<td>{{index}}</td>
+					<td>{{data.college_name}}</td>
+					<td>{{data.college_code}}</td>
+					<td hidden>{{data.college_departments}}</td>
+					<td hidden>{{data.college_address}}</td>
+					<td class="email">
+						<p style="display: none;">{{data.college_name}}</p>
+						<p class="display-email">{{data.college_email}}</p>
+						<button class="btn btn-primary display-button" data-toggle="modal" data-target="#myModal" style="font-size:1.5vh; box-shadow: 0px 0px 0px 0px white;border: 1px solid black;">send email to {{data.college_email}}</button>
+					</td>
+					<td>{{data.college_contact_no}}</td>
+					<td class="btn btn-success display-edit" data-toggle="modal" data-target="#myModal1">Edit</td>
+				</tr>
+				{% endfor %}
+				</tbody>
+			</table>
+		</div>
+
+		<div class="modal" id="myModal">
+			<div class="modal-dialog">
+				<div class="modal-content" >
+				<!-- Modal Header -->
+					<div class="modal-header">
+						<h4 class="modal-title">Mail Alumni</h4>
+						<p style="display:none" id="emailpara">hello</p>
+						<button type="button" class="close" id="close" data-dismiss="modal">&times;</button>
+					</div>
+					<!-- Modal body -->
+					<div class="modal-body">
+						<div class="form-group">
+							<input type="text" id="subject" class="form-control" placeholder="Subject">
+						</div>
+						<div class="form-group">
+							<textarea cols=50 rows=10 id="message" class="form-control" placeholder="compose email"></textarea>
+						</div>
+					</div>
+					<!-- Modal footer -->
+					<div class="modal-footer">
+						<button type="button" id="sendemail" class="btn btn-success" data-dismiss="modal">Send</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- The Modal for Editing College Info -->
+		<div  class="modal" id="myModal1">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<p class="e-modal-title" >Edit Details</p>
+						<button type="button" class="close" id="close1" data-dismiss="modal">&times;</button>
+					</div>
+					<div class="modal-body">
+						<form id="editCollegeInfo">
+							<div class="row">
+								<div class="col-sm">
+									<div class="form-group">
+										<label>College Name</label>
+										<input type="text" class="form-control" name="" id="m-college-name" disabled>
+									</div>
+									<div class="form-group">
+										<label>College ID</label>
+										<input type="number" class="form-control" name="" id="m-college-id" disabled>
+									</div>
+									<div class="form-group">
+										<label>College departments<span style="font-size:12px;color:red;"><br>-Depts separated by commas</span></label>
+										<textarea class="form-control" rows="5" id="m-college-depts" name="" required></textarea>
+									</div>
+								</div>
+								<div class="col-sm">
+									<div class="form-group">
+										<label>Address</label>
+										<textarea class="form-control" rows="3" name="" id="m-college-address" required></textarea>
+									</div>
+									<div class="form-group">
+										<label>Email ID</label>
+										<input type="email" class="form-control" name="" id="m-college-email" required>
+									</div>
+									<div class="form-group">
+										<label>Contact No</label>
+										<input type="text" class="form-control" name="" id="m-college-contact" required>
+									</div>
+								</div>
+							</div>
+							<button type="button" style="float:right;" id="buttonEdit" class="btn btn-success" data-dismiss="modal">Save</button>
+						</form>
+					</div>
+				</div>
+			</div>
+        </div>
+	</div>
+{% block script %}
+	<script>
+		$(document).ready(function(){
+			$(document).on("keyup", (key) => {
+				if (key.which == 27){
+					$("#close").click().click();
+					$("#close1").click().click();
+				}
+			});
+			$("#buttonEdit").on("click", () =>{
+				$.ajax({
+					type: "POST",
+					data: {college_name: $("#m-college-name").val(), college_code: $("#m-college-id").val(), college_departments: $("#m-college-depts").val(), college_address:$("#m-college-address").val(), college_contact_no:$("#m-college-contact").val(), college_email: $("#m-college-email").val(), csrfmiddlewaretoken: '{{csrf_token}}'},
+					url: "{% url 'direc:DirectorateEditCollegeSave' %}",
+					success: (data) => {
+						alert(data);
+                        window.location.reload();
+					},
+					error: (error) => {
+						alert("Error in saving... please try again later");
+						console.log("error in "+error);
+					}
+				});
+			});
+
+            $('.display-button').on('click',function(){
+					var name = $(this).siblings().eq(0).text().trim();
+					var email = $(this).siblings().eq(1).text().trim();
+
+					console.log(name);
+					console.log(email);
+
+					$('.modal-title').text("Mail "+name);
+					$('#emailpara').text(email);
+			});
+
+		    $("#sendemail").on("click", function(){
+                $.ajax({
+                    type: "POST",
+                    data: {email: $("#emailpara").text(), subject: $("#subject").val(), message: $("#message").val(), csrfmiddlewaretoken: '{{csrf_token}}'},
+                    url: "{% url 'direc:DirectoratesendmailtoAlumni' %}",
+                    success: (data) => {
+                        console.log(data);
+                        alert(data);
+                    },
+                    error: (error) => {
+                        alert("Error in sending message... please try again later");
+                        console.log("error in "+error);
+                    }
+                });
+                $("#emailpara").val("");
+                $("#subject").val("");
+                $("#message").val("");
+            });
+			$('tr').hover(function(){
+				if ($(window).width() > 600){
+					$(this).find('.display-email').toggle();
+					$(this).find('.display-button').toggle();
+					$(this).find('.display-edit').toggle();
+				}
+            });
+			$('#query').keyup(function(){
+				const col = $(this).val().toLowerCase();
+		 		$('tbody tr').filter(function(){
+		 		$(this).toggle($(this).text().toLowerCase().indexOf(col) > -1);
+			});
+		});
+		});
+
+		var rows = document.querySelectorAll('.display-edit');
+		rows.forEach((cur)=>{
+			cur.addEventListener('click',function(event){
+				let parentArr = Array.from(event.target.parentElement.children).slice(1,7);
+				let modalFields = ['name', 'id', 'depts', 'address', 'email', 'contact'];
+				modalFields.forEach((cur,i)=>{
+					if (i == 4){
+						let last = parentArr[i].innerText.split(' ');
+						let len = last.length-1;
+ 						document.querySelector('#m-college-'+cur).value = last[len];
+					}else{
+						document.querySelector('#m-college-'+cur).value = parentArr[i].innerText;
+					}
+				});
+		 	});
+		});
+	</script>
+{% endblock %}
+{% endblock content %}

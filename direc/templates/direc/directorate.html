@@ -1,0 +1,261 @@
+{% extends 'index.html' %}
+{% load static %}
+
+{% block title %}Directorate Page | Alumni Tracking System{% endblock %}
+
+{% block css %}
+	<style>
+		.display-email{
+			display: block;
+		}
+		.display-button{
+			display: none;
+		}
+		.tableFixHead{
+			overflow-y: auto;
+			height: 500px;
+		}
+		.tableFixHead thead th {
+			position: sticky;
+			top: 0px;
+		}
+		@media screen and (max-width: 600px){
+			.display-email{
+				display: none;
+			}
+			.display-button{
+				display: block;
+			}
+		}
+    </style>
+{% endblock css %}
+
+{% block content %}
+	{% if user.is_authenticated %}
+
+
+    <nav class="navbar navbar-expand-md bg-dark navbar-dark fixed-top">
+		<a class="navbar-brand" href="{% url 'app1:HomePage' %}"><i class="fas fa-home"></i></a>
+		<ul class="navbar-nav text-white">
+			<li class="nav-item">Alumni Tracking - Directorate
+			</li>
+		</ul>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item btn">
+					<a class="nav-link text-white" href="{% url 'direc:DirectorateEditCollege' %}">Manage College</a>
+				</li>
+                <li class="nav-item">
+					<a class="btn btn-danger nav-link" style="border-radius: 20px;" href="{% url 'app1:StudentLogout' %}">sign out</a>
+				</li>
+			</ul>
+        </div>
+    </nav>
+
+
+	<div class="container" style="position:relative;padding-top:80px;">
+
+		<div class="filter-query row">
+			<div class="college-filter col-sm">
+				<div class="form-group">
+					<select id="college" class="form-control" style="box-shadow: 0px 0px 0px 0px white;border: 2px solid black;">
+						<option selected hidden>College</option>
+						{% for i in college %}
+						<option>{{i.college_name}}</option>
+						{% endfor %}
+					</select>
+				</div>
+			</div>
+
+			<div class="dept-filter col-sm">
+				<div class="form-group">
+		            <select id="dept"  class="form-control" style="box-shadow: 0px 0px 0px 0px white;border: 2px solid black;">
+		                <option selected hidden>Department</option>
+						<option>Civil Engineering</option>
+						<option>Mechanical Engineering</option>
+						<option>Electronics and Communication Engineering</option>
+						<option>Electrical and Electronics Engineering</option>
+						<option>Computer Science and Engineering</option>
+						<option>Metallurgical Engineering</option>
+		            </select>
+		        </div>
+			</div>
+
+			<div class="batch-filter col-sm">
+				<div class="form-group">
+		            <select id="batch" class="form-control" style="box-shadow: 0px 0px 0px 0px white;border: 2px solid black;">
+		                <option selected hidden>Batch</option>
+		            </select>
+		        </div>
+			</div>
+
+			<div class="search-filter col-sm">
+				<div class="form-group">
+		            <input type="text" id="query" class="form-control" style="box-shadow: 0px 0px 0px 0px white;border: 2px solid black;" placeholder="Search by name or register">
+		        </div>
+			</div>
+		</div>
+
+
+		<div class="table-filter tableFixHead table-responsive">
+			<table class="table table-hover">
+				<thead class="thead-dark" style="height:30px;">
+	                <tr>
+	                    <th>SNo</th>
+	                    <th>Name</th>
+	                    <th>Reg no</th>
+	                    <th>Email</th>
+	                    <th>Mobile</th>
+	                </tr>
+	            </thead>
+				<tbody id="alumniBody">
+					{% for index, data in Alumni %}
+						<tr>
+							<td>{{index}}</td>
+							<td title="{{data.Name}}">
+								{{data.Name}}
+							</td>
+							<td>{{data.Regno}}</td>
+							<td class="email">
+								<p style="display: none;">{{data.Name}}</p>
+								{% if data.Email %}
+									<p class="display-email">{{data.Email}}</p>
+									<button class="btn btn-primary display-button" data-toggle="modal" data-target="#myModal" style="font-size:1.5vh; box-shadow: 0px 0px 0px 0px white;border: 1px solid black;">send email to {{data.Email}}</button>
+								{% else %}
+									<p class="display-email">{{"None"}}</p>
+									<button class="btn btn-primary display-button" style="font-size:1.5vh; box-shadow: 0px 0px 0px 0px white;border: 1px solid black;">no email</button>
+								{% endif %}
+							</td>
+							<td>
+								{% if data.PhoneNo %}
+									{{data.PhoneNo}}
+								{% else %}
+									{{"None"}}
+								{% endif %}
+							</td>
+						</tr>
+					{% endfor %}
+	            </tbody>
+			</table>
+		</div>
+
+		<div class="modal" id="myModal">
+	        <div class="modal-dialog modal-dialog-centered">
+	            <div class="modal-content">
+	                <div class="modal-header">
+	                    <h4 class="modal-title">Mail Alumni</h4>
+	                    <p style="display:none" id="emailpara">hello</p>
+	                    <button type="button" class="close" id="close" data-dismiss="modal">&times;</button>
+	                </div>
+	                <div class="modal-body">
+	                    <div class="form-group">
+	                        <input type="text" id="subject" class="form-control" placeholder="Subject">
+	                    </div>
+	                    <div class="form-group">
+	                        <textarea cols=50 rows=10 id="message" class="form-control" placeholder="compose email"></textarea>
+	                    </div>
+	                </div>
+	                <div class="modal-footer">
+	                    <button type="button" id="sendemail" class="btn btn-success" data-dismiss="modal">Send</button>
+	                </div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	{% else %}
+		<h2>hello</h2>
+		<p>please <a href="{% url 'app1:UserLogin' %}">login</a></p>
+	{% endif %}
+
+{% block script %}
+	 <script>
+        $(document).ready(function(){
+			$(document).on("keyup", (key) => {
+				if (key.which == 27){
+					$("#close").click().click();
+				}
+			});
+            (function(){
+                let cur_year = new Date().getFullYear() - 3;
+                for(let i=1970;i<cur_year;i++){
+                    $('#batch').append("<option>"+i+"-"+(i+4)+"</option>");
+                }
+            })();
+
+            $("#query").on("keyup", function(){
+                let q = $(this).val().toLowerCase();
+                $("tbody tr").filter(function() {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(q) > -1);
+                });
+            });
+			function toggling(){
+				if ($(window).width() > 600){
+					$('tr').hover(function(){
+						$(this).find('.display-email').toggle();
+						$(this).find('.display-button').toggle();
+					});
+				}
+				$('.display-button').on('click',function(){
+					var name = $(this).siblings().eq(0).text().trim().split(' ')[0];
+					var email = $(this).siblings().eq(1).text().trim();
+					$('.modal-title').text("Mail "+name);
+					$('#emailpara').text(email);
+				});
+				$("#sendemail").on("click", function(){
+					$.ajax({
+						type: "POST",
+						data: {email: $("#emailpara").text(), subject: $("#subject").val(), message: $("#message").val(), csrfmiddlewaretoken: '{{csrf_token}}'},
+						url: "{% url 'direc:DirectoratesendmailtoAlumni' %}",
+						success: (data) => 	{
+							alert(data);
+						},
+						error: (error) => {
+							alert("Error in sending message... please try again later");
+							console.log("error in "+error);
+						}
+					});
+					$("#emailpara").val("");
+					$("#subject").val("");
+					$("#message").val("");
+				});
+				$("#college, #dept, #batch").on('change', function(e){
+					check();
+				});
+            }
+            toggling();
+            function check(){
+                if ($("#college").val() !== "College" && $("#dept").val() !== "Department" && $("#batch").val() !== "Batch"){
+                    let college = $("#college").val();
+                    let dept = $("#dept").val();
+                    let batch = $("#batch").val();
+                    $.ajax({
+                        type: "POST",
+                        data: {college: college, dept: dept, batch: batch, csrfmiddlewaretoken: '{{csrf_token}}'},
+                        url: "{% url 'direc:directorateDashboard' %}",
+                        success: function(data){
+                            if(data !== "no data"){
+                            	$("#alumniBody").children().remove();
+                                for (let i of data){
+                               		let htmlCode = `<tr><td>${data.indexOf(i)+1}</td><td title="${i[0]}">${i[0]}</td><td>${i[1]}</td><td class="email"><p style="display: none;">${i[0]}</p><p class="display-email">${i[2]}</p><button class="btn btn-primary display-button" data-toggle="modal" data-target="#myModal" style="font-size:1.5vh; box-shadow: 0px 0px 0px 0px white;border: 1px solid black;">send email to ${i[2]}</button></td><td>${i[3]}</td></tr>`;
+	           						$("#alumniBody").append(htmlCode);
+                                }
+                               	toggling();
+                            }else{
+                            	$("#alumniBody").children().remove();
+                            	alert("no data");
+                            }
+                        },
+                        error: function(error){
+                            console.log(error);
+                        },
+                    });
+                }
+            }
+	    });
+    </script>
+{% endblock script %}
+
+{% endblock content %}
